@@ -4,3 +4,4 @@ dwm
 .clangd/*
 *.rej
 *.orig
+cscope.*
