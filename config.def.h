@@ -7,6 +7,9 @@ static unsigned int borderpx  = 5;        /* border pixel of windows */
 static unsigned int snap      = 32;       /* snap pixel */
 static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
+static const int vertpad      = 10;       /* vertical padding of bar */
+static const int sidepad      = 10;       /* horizontal padding of bar */
+static const int user_bh      = 0;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will use user_bh as bar height */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
@@ -23,7 +26,7 @@ static const int swallowfloating    = 0;        /* 1 means swallow floating wind
 static const char *altbarcmd        = ""; /* Alternate bar launch command */
 static const char *fonts[]          = { "SauceCodePro Nerd Font:size=10" };
 static const char dmenufont[]       = "SauceCodePro Nerd Font:size=10";
-static const unsigned int baralpha = 0xd0;
+static const unsigned int baralpha = OPAQUE;
 static const unsigned int borderalpha = OPAQUE;
 static char normbgcolor[]           = "#222222";
 static char normbordercolor[]       = "#444444";
@@ -62,7 +65,7 @@ static const Rule rules[] = {
 /* layout(s) */
 static float mfact     = 0.65; /* factor of master area size [0.05..0.95] */
 static int nmaster     = 1;    /* number of clients in master area */
-static int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
 #define FORCE_VSPLIT 1 /*nrowgrid layout: foce two clients to always split vertically */
 #include "vanitygaps.c"
@@ -129,8 +132,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+	/* { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, */
+	/* { MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, */
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|Mod1Mask,              XK_h,      incrgaps,       {.i = +1 } },
@@ -151,6 +154,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_s,      togglesticky,   {0} },
+	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
@@ -160,7 +164,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
 	/* Application shortcuts */
 	{ MODKEY,                       XK_d,      spawn,          SHCMD("open_calen") },
-	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacs -nc") },
+	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacsclient -nc") },
 	{ MODKEY,                       XK_r,      spawn,          SHCMD(TERMINAL " -e ranger") },
 	{ MODKEY,                       XK_p,      spawn,          SHCMD("keepassxc") },
 	{ MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
