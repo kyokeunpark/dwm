@@ -1,0 +1,6 @@
+compile_commands.*
+*.o
+dwm
+.clangd/*
+*.rej
+*.orig
