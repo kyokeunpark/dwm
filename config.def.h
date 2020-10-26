@@ -48,18 +48,38 @@ static const unsigned int alphas[][3]      = {
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
+static const char scratchpadname[] = "scratchpad";
+static const char btmscratchname[] = "btmscratch";
+static const char kpscratchname[]  = "keepassxc";
+typedef struct {
+	const char *name;
+	const void *cmd;
+} Sp;
+const char *spcmd1[] = { "st", "-n", scratchpadname, "-g", "120x34", NULL };
+const char *spcmd2[] = { "st", "-n", btmscratchname, "-g", "240x68", "-e", "btm", NULL };
+const char *spcmd3[] = { "keepassxc", NULL };
+static Sp scratchpads[] = {
+	/* name           cmd */
+	{ scratchpadname, spcmd1 },
+	{ btmscratchname, spcmd2 },
+	{ kpscratchname,  spcmd3 },
+};
+
 static const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
-	{ "Thunderbird",NULL,  NULL,           1 << 7,    0,          0,           0,        -1 },
-	{ "Feh",     NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "Peek",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ NULL,      NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
+	/* class     instance        title           tags mask  isfloating  isterminal  noswallow  monitor */
+	{ "Gimp",    NULL,           NULL,           0,         1,          0,           0,        -1 },
+	{ "St",      NULL,           NULL,           0,         0,          1,           0,        -1 },
+	{ "Thunderbird",NULL,        NULL,           1 << 7,    0,          0,           0,        -1 },
+	{ "Peek",    NULL,           NULL,           0,         1,          0,           0,        -1 },
+	{ NULL,      NULL,           "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
+	{ NULL,      NULL,           "pulsemixer",   0,         1,          0,           1,        -1 },
+	{ NULL,      scratchpadname, NULL,           SPTAG(0),  1,          1,           1,        -1 },
+	{ NULL,      btmscratchname, NULL,           SPTAG(1),  1,          1,           1,        -1 },
+	{ NULL,      kpscratchname,  NULL,           SPTAG(2),  1,          0,           1,        -1 },
 };
 
 /* layout(s) */
@@ -76,6 +96,7 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 	{ "|M|",      centeredmaster },
 	{ ">M>",      centeredfloatingmaster },
+	{ "H[]",      deck },
 };
 
 /* key definitions */
@@ -89,7 +110,6 @@ static const Layout layouts[] = {
 #define STACKKEYS(MOD,ACTION) \
 	{ MOD, XK_j,     ACTION##stack, {.i = INC(+1) } }, \
 	{ MOD, XK_k,     ACTION##stack, {.i = INC(-1) } }, \
-	{ MOD, XK_grave, ACTION##stack, {.i = PREVSEL } }, \
 	{ MOD, XK_z,     ACTION##stack, {.i = 0 } }, \
 	{ MOD, XK_x,     ACTION##stack, {.i = -1 } },
 
@@ -100,8 +120,6 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char scratchpadname[] = "scratchpad";
-static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "120x34", NULL };
 
 /*
  * Xresources preferences to load at startup
@@ -114,7 +132,7 @@ ResourcePref resources[] = {
 		{ "selbordercolor",     STRING,  &selbordercolor },
 		{ "selfgcolor",         STRING,  &selfgcolor },
 		{ "borderpx",          	INTEGER, &borderpx },
-		{ "snap",          		INTEGER, &snap },
+		{ "snap",          	INTEGER, &snap },
 		{ "showbar",          	INTEGER, &showbar },
 		{ "topbar",          	INTEGER, &topbar },
 		{ "nmaster",          	INTEGER, &nmaster },
@@ -126,12 +144,14 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_space,  spawn,          SHCMD("$HOME/.config/rofi/launcher.sh") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_grave,  togglescratch,  {.v = scratchpadcmd } },
+	{ MODKEY,                       XK_grave,  togglescratch,  { .ui = 0 } },
+	{ MODKEY,                       XK_apostrophe,togglescratch,{ .ui = 1 } },
+	{ MODKEY,                       XK_p,      togglescratch,   { .ui = 2 } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
-	/* { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, */
-	/* { MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, */
+	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|Mod1Mask,              XK_h,      incrgaps,       {.i = +1 } },
@@ -145,11 +165,12 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, /* tile */
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, /* floating */
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} }, /* monocle */
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} }, /* centeredmaster */
+	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} }, /* centeredfloatingmaster */
+	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[5]} }, /* deck */
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_s,      togglesticky,   {0} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
@@ -160,15 +181,17 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
-	/* Application shortcuts */
+
+	/* ====== Application shortcuts ====== */
 	{ MODKEY,                       XK_d,      spawn,          SHCMD("open_calen") },
 	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacsclient -nc") },
+	{ MODKEY|ShiftMask,             XK_m,      spawn,          SHCMD(TERMINAL " -t pulsemixer -g 120x34 -e pulsemixer") },
 	{ MODKEY,                       XK_r,      spawn,          SHCMD(TERMINAL " -e ranger") },
-	{ MODKEY,                       XK_p,      spawn,          SHCMD("keepassxc") },
 	{ MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
 	{ MODKEY,                       XK_semicolon,spawn,        SHCMD("rofi -show emoji -modi emoji") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
 	{ ShiftMask,                    XK_Print,  spawn,          SHCMD("peek") },
+
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
