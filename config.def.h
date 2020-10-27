@@ -9,7 +9,8 @@ static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad      = 10;       /* vertical padding of bar */
 static const int sidepad      = 10;       /* horizontal padding of bar */
-static const int user_bh      = 0;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will use user_bh as bar height */
+static const int user_bh      = 25;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will use user_bh as bar height */
+static const int nrg_force_vsplit   = 1;
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
@@ -24,7 +25,7 @@ static const unsigned int gappov    = 10;       /* vert outer gap between window
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const char *altbarcmd        = ""; /* Alternate bar launch command */
-static const char *fonts[]          = { "SauceCodePro Nerd Font:size=10" };
+static const char *fonts[]          = { "Source Code Pro:size=10", "SauceCodePro Nerd Font:size=14" };
 static const char dmenufont[]       = "SauceCodePro Nerd Font:size=10";
 static const unsigned int baralpha = OPAQUE;
 static const unsigned int borderalpha = OPAQUE;
@@ -46,7 +47,8 @@ static const unsigned int alphas[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
+static const char *alttags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const char scratchpadname[] = "scratchpad";
 static const char btmscratchname[] = "btmscratch";
@@ -91,11 +93,11 @@ static int resizehints = 0;    /* 1 means respect size hints in tiled resizals *
 #include "vanitygaps.c"
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "﬿",      tile },    /* first entry is default */
+	{ "",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
-	{ "|M|",      centeredmaster },
-	{ ">M>",      centeredfloatingmaster },
+	{ "頻",      centeredmaster },
+	{ "恵",      centeredfloatingmaster },
 	{ "H[]",      deck },
 };
 
@@ -154,6 +156,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.25} },
+	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.25} },
+	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f = 0} },
 	{ MODKEY|Mod1Mask,              XK_h,      incrgaps,       {.i = +1 } },
 	{ MODKEY|Mod1Mask,              XK_l,      incrgaps,       {.i = -1 } },
 	{ MODKEY|Mod1Mask|ShiftMask,    XK_h,      incrogaps,      {.i = +1 } },
@@ -180,7 +185,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
 
 	/* ====== Application shortcuts ====== */
 	{ MODKEY,                       XK_d,      spawn,          SHCMD("open_calen") },
@@ -191,6 +195,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_semicolon,spawn,        SHCMD("rofi -show emoji -modi emoji") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
 	{ ShiftMask,                    XK_Print,  spawn,          SHCMD("peek") },
+	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
