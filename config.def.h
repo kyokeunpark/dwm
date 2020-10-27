@@ -14,7 +14,7 @@ static const int nrg_force_vsplit   = 1;
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray        = 1;     /* 0 means no systray */
+static const int showsystray        = 0;     /* 0 means no systray */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const int usealtbar          = 0;        /* 1 means use non-dwm status bar */
@@ -27,7 +27,7 @@ static const int swallowfloating    = 0;        /* 1 means swallow floating wind
 static const char *altbarcmd        = ""; /* Alternate bar launch command */
 static const char *fonts[]          = { "Source Code Pro:size=10", "SauceCodePro Nerd Font:size=14" };
 static const char dmenufont[]       = "SauceCodePro Nerd Font:size=10";
-static const unsigned int baralpha = OPAQUE;
+static const unsigned int baralpha  = 0x88;
 static const unsigned int borderalpha = OPAQUE;
 static char normbgcolor[]           = "#222222";
 static char normbordercolor[]       = "#444444";
@@ -35,6 +35,41 @@ static char normfgcolor[]           = "#bbbbbb";
 static char selfgcolor[]            = "#eeeeee";
 static char selbordercolor[]        = "#005577";
 static char selbgcolor[]            = "#005577";
+static char termcol0[] = "#000000"; /* black   */
+static char termcol1[] = "#ff0000"; /* red     */
+static char termcol2[] = "#33ff00"; /* green   */
+static char termcol3[] = "#ff0099"; /* yellow  */
+static char termcol4[] = "#0066ff"; /* blue    */
+static char termcol5[] = "#cc00ff"; /* magenta */
+static char termcol6[] = "#00ffff"; /* cyan    */
+static char termcol7[] = "#d0d0d0"; /* white   */
+static char termcol8[]  = "#808080"; /* black   */
+static char termcol9[]  = "#ff0000"; /* red     */
+static char termcol10[] = "#33ff00"; /* green   */
+static char termcol11[] = "#ff0099"; /* yellow  */
+static char termcol12[] = "#0066ff"; /* blue    */
+static char termcol13[] = "#cc00ff"; /* magenta */
+static char termcol14[] = "#00ffff"; /* cyan    */
+static char termcol15[] = "#ffffff"; /* white   */
+static char *termcolor[] = {
+  termcol0,
+  termcol1,
+  termcol2,
+  termcol3,
+  termcol4,
+  termcol5,
+  termcol6,
+  termcol7,
+  termcol8,
+  termcol9,
+  termcol10,
+  termcol11,
+  termcol12,
+  termcol13,
+  termcol14,
+  termcol15,
+};
+
 static char *colors[][3] = {
 	/*               fg           bg           border   */
 	[SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
@@ -196,6 +231,9 @@ static Key keys[] = {
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
 	{ ShiftMask,                    XK_Print,  spawn,          SHCMD("peek") },
 	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
+	{ MODKEY,                       XK_F10,    spawn,          SHCMD("dwm_volume toggle") },
+	{ MODKEY,                       XK_F11,    spawn,          SHCMD("dwm_volume 5%-") },
+	{ MODKEY,                       XK_F12,    spawn,          SHCMD("dwm_volume 5%+") },
 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)

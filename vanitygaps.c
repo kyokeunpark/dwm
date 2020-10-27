@@ -22,7 +22,6 @@ static void spiral(Monitor *m);
 static void tile(Monitor *m);
 /* Internals */
 static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float *mf, float *sf);
-static void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf, int *mr, int *sr);
 static void setgaps(int oh, int ov, int ih, int iv);
 
 /* Settings */
@@ -220,7 +219,6 @@ bstackhoriz(Monitor *m)
 	int mx = 0, my = 0, mh = 0, mw = 0;
 	int sx = 0, sy = 0, sh = 0, sw = 0;
 	float mfacts, sfacts;
-	int mrest, srest;
 	Client *c;
 
 	getgaps(m, &oh, &ov, &ih, &iv, &n, &mfacts, &sfacts);
@@ -240,8 +238,6 @@ bstackhoriz(Monitor *m)
 		sh = m->wh - mh - 2*oh - ih * (n - m->nmaster);
 		sw = m->ww - 2*ov;
 	}
-
-	getfacts(m, mw, sh, &mfacts, &sfacts, &mrest, &srest);
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
 		if (i < m->nmaster) {
