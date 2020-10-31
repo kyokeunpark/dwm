@@ -18,16 +18,16 @@ static const int showsystray        = 0;     /* 0 means no systray */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const int usealtbar          = 0;        /* 1 means use non-dwm status bar */
-static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
-static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+static const unsigned int gappih    = 20;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 20;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 20;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 20;       /* vert outer gap between windows and screen edge */
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const char *altbarcmd        = ""; /* Alternate bar launch command */
 static const char *fonts[]          = { "Source Code Pro:size=10", "SauceCodePro Nerd Font:size=14" };
 static const char dmenufont[]       = "SauceCodePro Nerd Font:size=10";
-static const unsigned int baralpha  = 0x88;
+static const unsigned int baralpha  = 0xcc;
 static const unsigned int borderalpha = OPAQUE;
 static char normbgcolor[]           = "#222222";
 static char normbordercolor[]       = "#444444";
@@ -177,6 +177,7 @@ ResourcePref resources[] = {
 		{ "mfact",      	 	FLOAT,   &mfact },
 };
 
+#include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_space,  spawn,          SHCMD("$HOME/.config/rofi/launcher.sh") },
@@ -185,15 +186,12 @@ static Key keys[] = {
 	{ MODKEY,                       XK_apostrophe,togglescratch,{ .ui = 1 } },
 	{ MODKEY,                       XK_p,      togglescratch,   { .ui = 2 } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	STACKKEYS(MODKEY,                          focus)
-	STACKKEYS(MODKEY|ShiftMask,                push)
+	{ MODKEY,                       XK_Escape,   spawn,        SHCMD("powermenu") },
+	{ MODKEY|ShiftMask,             XK_BackSpace, quit,        {0} },
+
+	/* ====== Gap manipulation ======= */
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.25} },
-	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.25} },
-	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f = 0} },
 	{ MODKEY|Mod1Mask,              XK_h,      incrgaps,       {.i = +1 } },
 	{ MODKEY|Mod1Mask,              XK_l,      incrgaps,       {.i = -1 } },
 	{ MODKEY|Mod1Mask|ShiftMask,    XK_h,      incrogaps,      {.i = +1 } },
@@ -202,30 +200,35 @@ static Key keys[] = {
 	{ MODKEY|Mod1Mask|ControlMask,  XK_l,      incrigaps,      {.i = -1 } },
 	{ MODKEY|Mod1Mask,              XK_a,      togglegaps,     {0} },
 	{ MODKEY|Mod1Mask|ShiftMask,    XK_a,      defaultgaps,    {0} },
-	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_q,      killclient,     {0} },
+
+	/* ====== Layout manipulation ====== */
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, /* tile */
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, /* floating */
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} }, /* monocle */
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} }, /* centeredmaster */
 	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} }, /* centeredfloatingmaster */
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[5]} }, /* deck */
+
+	/* ====== Window manipulation ====== */
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_s,      togglesticky,   {0} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY,                       XK_q,      killclient,     {0} },
+	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.25} },
+	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.25} },
+	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f = 0} },
+	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
+	{ MODKEY,                       XK_Tab,    view,           {0} },
+	STACKKEYS(MODKEY,                          focus)
+	STACKKEYS(MODKEY|ShiftMask,                push)
 
 	/* ====== Application shortcuts ====== */
 	{ MODKEY,                       XK_d,      spawn,          SHCMD("open_calen") },
 	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacsclient -nc") },
 	{ MODKEY|ShiftMask,             XK_m,      spawn,          SHCMD(TERMINAL " -t pulsemixer -g 120x34 -e pulsemixer") },
-	{ MODKEY,                       XK_r,      spawn,          SHCMD(TERMINAL " -e ranger") },
+	{ MODKEY,                       XK_r,      spawn,          SHCMD(TERMINAL " -e lf") },
 	{ MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
 	{ MODKEY,                       XK_semicolon,spawn,        SHCMD("rofi -show emoji -modi emoji") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
@@ -235,6 +238,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_F11,    spawn,          SHCMD("dwm_volume 5%-") },
 	{ MODKEY,                       XK_F12,    spawn,          SHCMD("dwm_volume 5%+") },
 
+	/* ====== Tag manipulation ====== */
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -244,8 +248,14 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY,                       XK_Escape,   spawn,        SHCMD("power_menu") },
-	{ MODKEY|ShiftMask,             XK_BackSpace, quit,        {0} },
+	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+	{ MODKEY,                       XK_bracketleft,  shiftview, {.i = -1 } },
+	{ MODKEY,                       XK_bracketright, shiftview, {.i = +1 } },
 };
 
 /* button definitions */
