@@ -179,6 +179,7 @@ ResourcePref resources[] = {
 		{ "mfact",      	 	FLOAT,   &mfact },
 };
 
+#include <X11/XF86keysym.h>
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -238,6 +239,7 @@ static Key keys[] = {
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
 	{ ShiftMask,                    XK_Print,  spawn,          SHCMD("peek") },
 	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
+	{ MODKEY,                       XK_F6,     spawn,          SHCMD("networkmanager_dmenu") },
 	{ MODKEY,                       XK_F10,    spawn,          SHCMD("dwm_volume toggle") },
 	{ MODKEY,                       XK_F11,    spawn,          SHCMD("dwm_volume 5%-") },
 	{ MODKEY,                       XK_F12,    spawn,          SHCMD("dwm_volume 5%+") },
@@ -260,6 +262,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY,                       XK_bracketleft,  shiftview, {.i = -1 } },
 	{ MODKEY,                       XK_bracketright, shiftview, {.i = +1 } },
+
+	/* ====== Media keys ====== */
+	{ 0, XF86XK_AudioMute,                     spawn,          SHCMD("dwm_volume toggle") },
+	{ 0, XF86XK_AudioRaiseVolume,              spawn,          SHCMD("dwm_volume 5%+") },
+	{ 0, XF86XK_AudioLowerVolume,              spawn,          SHCMD("dwm_volume 5%-") },
+	{ 0, XF86XK_MonBrightnessUp,               spawn,          SHCMD("light -A 10") },
+	{ 0, XF86XK_MonBrightnessDown,             spawn,          SHCMD("light -U 10") },
 };
 
 /* button definitions */
