@@ -5,3 +5,4 @@ dwm
 *.rej
 *.orig
 cscope.*
+config.h

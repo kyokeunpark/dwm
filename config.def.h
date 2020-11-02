@@ -133,7 +133,9 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 	{ "頻",      centeredmaster },
 	{ "恵",      centeredfloatingmaster },
-	{ "H[]",      deck },
+	{ "H[]",     deck },
+	{ "響",      bstack },
+	{ "﩯",       grid },
 };
 
 /* key definitions */
@@ -208,6 +210,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} }, /* centeredmaster */
 	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} }, /* centeredfloatingmaster */
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[5]} }, /* deck */
+	{ MODKEY|ShiftMask,             XK_o,      setlayout,      {.v = &layouts[6]} }, /* bstack */
+	{ MODKEY,                       XK_g,      setlayout,      {.v = &layouts[7]} }, /* grid */
 
 	/* ====== Window manipulation ====== */
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
