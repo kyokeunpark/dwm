@@ -267,6 +267,7 @@ static Key keys[] = {
 	{ 0, XF86XK_AudioMute,                     spawn,          SHCMD("dwm_volume toggle") },
 	{ 0, XF86XK_AudioRaiseVolume,              spawn,          SHCMD("dwm_volume 5%+") },
 	{ 0, XF86XK_AudioLowerVolume,              spawn,          SHCMD("dwm_volume 5%-") },
+	{ 0, XF86XK_AudioMicMute,                  spawn,          SHCMD("pactl set-souce-mute 1 toggle") },
 	{ 0, XF86XK_MonBrightnessUp,               spawn,          SHCMD("light -A 10") },
 	{ 0, XF86XK_MonBrightnessDown,             spawn,          SHCMD("light -U 10") },
 };
