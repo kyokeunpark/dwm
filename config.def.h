@@ -231,9 +231,11 @@ static Key keys[] = {
 
 	/* ====== Application shortcuts ====== */
 	{ MODKEY,                       XK_d,      spawn,          SHCMD("open_calen") },
-	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacsclient -nc") },
+	{ MODKEY,                       XK_e,      spawn,          SHCMD("emacs") },
 	{ MODKEY|ShiftMask,             XK_m,      spawn,          SHCMD(TERMINAL " -t pulsemixer -g 120x34 -e pulsemixer") },
+	{ MODKEY,                       XK_n,      spawn,          SHCMD(TERMINAL " -f 'Fira Mono:pixelsize=24:antialias=true:autohint=true' -t neomutt -e neomutt") },
 	{ MODKEY,                       XK_r,      spawn,          SHCMD(TERMINAL " -e lf") },
+	{ MODKEY|ShiftMask,             XK_s,      spawn,          SHCMD("spotify") },
 	{ MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
 	{ MODKEY,                       XK_semicolon,spawn,        SHCMD("rofi -show emoji -modi emoji") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("maimpick") },
